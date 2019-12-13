@@ -1,0 +1,13 @@
+{
+  "name": "save-and-restore-layouts-demo",
+  "title": "Save and Restore Layouts Demo",
+  "type": "window",
+  "details": {
+    "url": "http://localhost:3322",
+    "mode": "tab",
+    "width": 500,
+    "height": 400,
+    "top": 200,
+    "left": 200
+  }
+}

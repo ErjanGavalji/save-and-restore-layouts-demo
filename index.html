@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <script src="https://cdn.glue42.com/desktop@4.6.3/dist/web/@glue42/desktop.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="saveLayoutContainer">
+      <label for="layoutName">Layout Name:
+        <input type="text" name="layoutName" id="layoutName" />
+      </label>
+      <button id="saveLayoutButton">Save Layout</button>
+    </div>
+    <div id="loadLayoutContainer">
+    <label for="availableLayouts">Available Layouts:
+      <select id="availableLayouts"></select>
+    </label>
+    <button id="loadLayoutButton">Load Layout</button>
+    <script type="module">
+      import { initGlue42Connection, getLayouts } from "./glue-related.js";
+
+      function refreshLayouts(container) {
+        for (let i=container.options.length-1; i>=0; i--) {
+          container.remove(i)
+        }
+
+        const layouts = getLayouts();
+        layouts.forEach(l => {
+          const newOption = document.createElement("option");
+          newOption.value = l.name;
+          newOption.text = l.name;
+          container.add(newOption);
+        });
+      }
+
+      function getLayoutConfig(name) {
+        return {
+          name,
+          autoCollectApps: true
+        };
+      }
+
+      function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function loadLayout() {
+        const selectedOptions = window.layoutsHolder.selectedOptions;
+        if (selectedOptions.length > 0) {
+          const selectedLayoutName = selectedOptions[0].value;
+          window.glue.layouts.restore(getLayoutConfig(selectedLayoutName));
+        }
+      }
+
+      async function saveLayout() {
+        const newLayoutName = document.getElementById("layoutName").value;
+        await window.glue.layouts.save(getLayoutConfig(newLayoutName));
+        refreshLayouts(window.layoutsHolder);
+      }
+
+
+      window.addEventListener("load", async (e) => {
+        window.layoutsHolder = document.getElementById("availableLayouts");
+        await initGlue42Connection();
+        await timeout(1);
+        refreshLayouts(window.layoutsHolder);
+        document.getElementById("saveLayoutButton").onclick = saveLayout;
+        document.getElementById("loadLayoutButton").onclick = loadLayout;
+      })
+    </script>
+  </body>
+</html>
